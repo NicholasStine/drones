@@ -53,7 +53,7 @@ class Drone():
 
     def render(self, gravity):
 
-        self.Motormixing(.2,-.2)
+        self.Motormixing(.5,0)
         self.body.timeStep(self.accels,dt,gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
