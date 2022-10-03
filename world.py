@@ -14,7 +14,7 @@ class World():
         self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
         self.drone = Drone(self.screen)
-        self.gravity = Vector(0.001, 'DOWN')
+        self.gravity = Vector(0.1, 'DOWN')
 
     def applyGravity(self):
         pass
