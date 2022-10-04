@@ -38,11 +38,11 @@ class BodyState(): # integrate EOM for a 3 DOF rigid body in free space
  
     def timeStep(self,accels,dt,gravity): # calculate accelerations externally
         gravity_x, gravity_y = gravity.getComponents()
-        self.X[0][2] = (accels[0]*cos(self.Theta[0]) + accels[1]*sin(self.Theta[0])) + gravity_x# (2D transform)
+        self.X[0][2] = accels[0]*cos(self.Theta[0] * (pi/180)) + accels[1]*sin(self.Theta[0]*(pi/180)) + gravity_x# (2D transform)
         self.X[0][1] = self.X[0][1] + (self.X[0][2] * dt)   # integrate velocity x
         self.X[0][0] = self.X[0][0] + (self.X[0][1] * dt)   # integrate position x
 
-        self.X[1][2] = (accels[1]*cos(self.Theta[0]) - accels[0]*sin(self.Theta[0])) + gravity_y
+        self.X[1][2] = accels[1]*cos(self.Theta[0]*(pi/180)) - accels[0]*sin(self.Theta[0]*(pi/180)) + gravity_y
         self.X[1][1] = self.X[1][1] + (self.X[1][2] * dt)   # integrate velocity y
         self.X[1][0] = self.X[1][0] + (self.X[1][1] * dt)   # integrate position y
 

@@ -11,7 +11,7 @@ DRONE_PATH = 'images/drone_medium.png'
 # initial positions
 
 X = [[500,0,0],[250,0,0]]
-theta = [0,0,0]
+theta = [45,0,0]
 
 # simulation timestep, link this to your pygame step size
 
@@ -30,12 +30,30 @@ class Drone():
                    |
                    |
                    |
-       -x < ------ o ------ > +x
+       -x < ------ o ------ > +x [0]
                    |
                    |
                    |
                    v
                   +y
+                  [1]
+
+                  So the transform is fixed. 
+
+                  In vector notation, the indexes of X are 0 = x, 1 = y
+
+                    accels[0,1,2] = accels[ 0 = acceleration x (body coordinates), 
+                                            1 = acceleration y (body coordinates),
+                                            2 = angular acceleration (body) 
+                                          ]
+
+                    body.X[i][j]  = vector i, derivative j. SO for body[0][1], 
+                    this would be the first derivative of the 0 direction. 
+                    In this case, 0 = X, so X[0][1] would be the velocity
+                    in the x direction, whereas X[1][2] would be the acceleration 
+                    in the y direction. 
+
+
         """
 
         # Physics
@@ -45,8 +63,8 @@ class Drone():
         self.mass = 3                 # mass
         self.inertia = 15             # moment of inertia
         self.accels = array([0,0,0])    # initial accelerations (thrust induced)
-        self.leftPropPos = 50          # length from center of mass to left propeller
-        self.rightPropPos = 50       # length from center of mass to right propeller
+        self.leftPropPos = 10          # length from center of mass to left propeller
+        self.rightPropPos = 10       # length from center of mass to right propeller
 
         # Dimensions
         self.strut = (100, 10)
@@ -55,13 +73,13 @@ class Drone():
         # motor mixing algorithm
 
         self.accels[0] = 0# no thrust in the x direction, only in y
-        self.accels[1] = (leftThrust + rightThrust) / self.mass # F = ma
-        self.accels[2] = ((leftThrust * self.leftPropPos)/self.inertia) - ((rightThrust * self.rightPropPos)/self.inertia)
+        self.accels[1] = -(leftThrust + rightThrust) / self.mass # F = ma
+        self.accels[2] = -((leftThrust * self.leftPropPos)/self.inertia) + ((rightThrust * self.rightPropPos)/self.inertia)
 
 
     def render(self, gravity):
-        self.Motormixing(0,0)
-        self.body.timeStep(self.accels,(1/60),gravity)
+        self.Motormixing(12,10)
+        self.body.timeStep(self.accels,(1/120),gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
         draw_img = pygame.transform.rotate(self.drone_img,self.body.Theta[0])
