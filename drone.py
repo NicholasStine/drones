@@ -78,7 +78,19 @@ class Drone():
 
 
     def render(self, gravity):
-        self.Motormixing(12,10)
+
+        """ LOOK AT ME!!!! How to use this function? self.Motormixing(leftSpeed,rightSpeed) 
+        = mix the thrust from a left an right propeller spinning at speeds leftSpeed and rightSpeed
+        So replace the dummy constants with your controller output!
+
+        Do you want me to write a controller??? 
+        This 2D case is very easy as there is no navigation problem. 
+
+        """
+
+        self.Motormixing(12,10) 
+
+
         self.body.timeStep(self.accels,(1/120),gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
