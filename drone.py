@@ -10,7 +10,7 @@ DRONE_PATH = 'images/drone_medium.png'
 # move this into your config or whatever
 # initial positions
 
-X = [[200,0,0],[200,0,0]]
+X = [[500,0,0],[250,0,0]]
 theta = [0,0,0]
 
 # simulation timestep, link this to your pygame step size
@@ -54,13 +54,13 @@ class Drone():
     def Motormixing(self,leftThrust,rightThrust):
         # motor mixing algorithm
 
-        self.accels[0] = 0#0; # no thrust in the x direction, only in y
-        self.accels[1] = -(leftThrust + rightThrust) / self.mass # F = ma
-        self.accels[2] = -((leftThrust * self.leftPropPos)/self.inertia - (rightThrust * self.rightPropPos)/self.inertia)
+        self.accels[0] = 0# no thrust in the x direction, only in y
+        self.accels[1] = (leftThrust + rightThrust) / self.mass # F = ma
+        self.accels[2] = ((leftThrust * self.leftPropPos)/self.inertia) - ((rightThrust * self.rightPropPos)/self.inertia)
 
 
     def render(self, gravity):
-        self.Motormixing(20,20.5)
+        self.Motormixing(0,0)
         self.body.timeStep(self.accels,(1/60),gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
