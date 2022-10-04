@@ -15,7 +15,7 @@ theta = [0,0,0]
 
 # simulation timestep, link this to your pygame step size
 
-dt = 0.1
+
 
 class Drone():
     def __init__(self, screen):
@@ -37,35 +37,36 @@ class Drone():
                    v
                   +y
         """
-        
+
         # Physics
         self.body = BodyState(X, theta) # body state
         self.pos_x = self.body.X[0][0]  # reference position X
         self.pos_y = self.body.X[1][0]  # reference position Y
-        self.mass = 0.3                 # mass
-        self.inertia = 0.25             # moment of inertia
+        self.mass = 3                 # mass
+        self.inertia = 15             # moment of inertia
         self.accels = array([0,0,0])    # initial accelerations (thrust induced)
         self.leftPropPos = 50          # length from center of mass to left propeller
         self.rightPropPos = 50       # length from center of mass to right propeller
-        
+
         # Dimensions
         self.strut = (100, 10)
 
     def Motormixing(self,leftThrust,rightThrust):
         # motor mixing algorithm
 
-        self.accels[0] = 0; # no thrust in the x direction, only in y
-        self.accels[1] = (leftThrust + rightThrust) / self.mass # F = ma
-        self.accels[2] = (leftThrust * self.leftPropPos)/self.inertia - (rightThrust * self.rightPropPos)/self.inertia
+        self.accels[0] = 0#0; # no thrust in the x direction, only in y
+        self.accels[1] = -(leftThrust + rightThrust) / self.mass # F = ma
+        self.accels[2] = -((leftThrust * self.leftPropPos)/self.inertia - (rightThrust * self.rightPropPos)/self.inertia)
 
 
     def render(self, gravity):
-        self.Motormixing(.5,0)
-        self.body.timeStep(self.accels,dt,gravity)
+        self.Motormixing(20,20.5)
+        self.body.timeStep(self.accels,(1/60),gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
+        draw_img = pygame.transform.rotate(self.drone_img,self.body.Theta[0])
         # pygame.draw.rect(self.screen, (90, 2, 33), pygame.Rect(*self.drawStrut()))
-        self.screen.blit(self.drone_img, (self.pos_x - (self.drone_img.get_width() / 2), self.pos_y - (self.drone_img.get_height() / 2)))
+        self.screen.blit(draw_img, (self.pos_x - (draw_img.get_width() / 2), self.pos_y - (draw_img.get_height() / 2)))
 
     def drawStrut(self):
         w, h = self.strut
