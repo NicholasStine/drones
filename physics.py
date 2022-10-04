@@ -27,14 +27,11 @@ class Position():
         self.y += self.dy
 
 class BodyState(): # integrate EOM for a 3 DOF rigid body in free space
-
-
     def __init__(self, X, Theta):
         # positional state vector
-        self.X = np.array([[0,0,0],[0,0,0]]) # [vector][state]
+        self.X = np.array([[0,0,0],[0,0,0]]) # [vector][state
         self.X = X
 
-    
         # angular state vector 
         self.Theta = np.array([0,0,0])
         self.Theta = Theta                
@@ -45,11 +42,9 @@ class BodyState(): # integrate EOM for a 3 DOF rigid body in free space
         self.X[0][1] = self.X[0][1] + (self.X[0][2] * dt)   # integrate velocity x
         self.X[0][0] = self.X[0][0] + (self.X[0][1] * dt)   # integrate position x
 
-        self.X[1][2] = accels[1]*cos(self.Theta[0]) + accels[0]*sin(self.Theta[0]) + gravity_y                    
+        self.X[1][2] = accels[1]*cos(self.Theta[0]) + accels[0]*sin(self.Theta[0]) + gravity_y
         self.X[1][1] = self.X[1][1] + (self.X[1][2] * dt)   # integrate velocity y
         self.X[1][0] = self.X[1][0] + (self.X[1][1] * dt)   # integrate position y
-        
-        
 
         self.Theta[2] = accels[2]
         self.Theta[1] = self.Theta[1] + self.Theta[2] * dt

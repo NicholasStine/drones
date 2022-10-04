@@ -6,10 +6,9 @@ pygame.init()
 
 speed = [2, 2]
 black = 0, 0, 0
-size = width, height = 600, 400
 
 class World():
-    def __init__(self, width=600, height=400):
+    def __init__(self, width=1200, height=720):
         self.size = width, height
         self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()

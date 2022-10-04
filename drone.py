@@ -5,10 +5,12 @@ from physics import Position, Vector, BodyState
 import pygame
 from numpy import array
 
+DRONE_PATH = 'images/drone_medium.png'
+
 # move this into your config or whatever
 # initial positions
 
-X = [[50,0,0],[50,0,0]]
+X = [[200,0,0],[200,0,0]]
 theta = [0,0,0]
 
 # simulation timestep, link this to your pygame step size
@@ -17,8 +19,9 @@ dt = 0.1
 
 class Drone():
     def __init__(self, screen):
-        # Screen (for drawing)
+        # Drawerz and imgz
         self.screen = screen
+        self.drone_img = pygame.image.load(DRONE_PATH).convert_alpha()
 
         """
 
@@ -27,7 +30,7 @@ class Drone():
                    |
                    |
                    |
-       =x < ------ . ------ > +x
+       -x < ------ o ------ > +x
                    |
                    |
                    |
@@ -44,7 +47,8 @@ class Drone():
         self.accels = array([0,0,0])    # initial accelerations (thrust induced)
         self.leftPropPos = 50          # length from center of mass to left propeller
         self.rightPropPos = 50       # length from center of mass to right propeller
-                                # Dimensions
+        
+        # Dimensions
         self.strut = (100, 10)
 
     def Motormixing(self,leftThrust,rightThrust):
@@ -56,12 +60,12 @@ class Drone():
 
 
     def render(self, gravity):
-
         self.Motormixing(.5,0)
         self.body.timeStep(self.accels,dt,gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
-        pygame.draw.rect(self.screen, (90, 2, 33), pygame.Rect(*self.drawStrut()))
+        # pygame.draw.rect(self.screen, (90, 2, 33), pygame.Rect(*self.drawStrut()))
+        self.screen.blit(self.drone_img, (self.pos_x - (self.drone_img.get_width() / 2), self.pos_y - (self.drone_img.get_height() / 2)))
 
     def drawStrut(self):
         w, h = self.strut
