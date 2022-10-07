@@ -71,6 +71,8 @@ class Drone():
 
     def Motormixing(self,leftThrust,rightThrust):
         # motor mixing algorithm
+        leftThrust = leftThrust * 1000
+        rightThrust = rightThrust * 1000
 
         self.accels[0] = 0# no thrust in the x direction, only in y
         self.accels[1] = -(leftThrust + rightThrust) / self.mass # F = ma
@@ -88,14 +90,13 @@ class Drone():
 
         """
 
-        self.Motormixing(12,10) 
+        self.Motormixing(0.6,0.5)
 
 
         self.body.timeStep(self.accels,(1/120),gravity)
         self.pos_x = self.body.X[0][0]
         self.pos_y = self.body.X[1][0]
         draw_img = pygame.transform.rotate(self.drone_img,self.body.Theta[0])
-        # pygame.draw.rect(self.screen, (90, 2, 33), pygame.Rect(*self.drawStrut()))
         self.screen.blit(draw_img, (self.pos_x - (draw_img.get_width() / 2), self.pos_y - (draw_img.get_height() / 2)))
 
     def drawStrut(self):
