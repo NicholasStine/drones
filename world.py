@@ -8,12 +8,12 @@ speed = [2, 2]
 black = 0, 0, 0
 
 class World():
-    def __init__(self, width=1200, height=720):
+    def __init__(self, width=1920, height=1080):
         self.size = width, height
         self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
         self.drone = Drone(self.screen)
-        self.gravity = Vector(500, 'DOWN')
+        self.gravity = Vector(100, 'DOWN')
 
     def runWorld(self, frames=10000):
         for i in range(frames):
