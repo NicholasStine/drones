@@ -2,6 +2,9 @@ from math import sin, cos, pi
 
 import numpy as np
 
+
+# controller for attitude
+
 class LQR_controller_attitude():					# 1D linear controller. create, and call with 'feedback()'
 
 	def __init__(self,control_variable,set_point,dt):
@@ -38,6 +41,7 @@ class LQR_controller_attitude():					# 1D linear controller. create, and call wi
 
 		self.E[1], self.E[2], self.E[3] = self.error_calc()
 
+
 	def feedback(self, control_variable):
 		# U = -K * E 
 		U = np.array([0,0])
@@ -51,20 +55,72 @@ class LQR_controller_attitude():					# 1D linear controller. create, and call wi
 
 	# scale motor outputs, eliminate dumb motor signals. assume motor speed range 0-100
 
-		if (U[0] >= 0):
-			leftMotorspeed = U[0]
-		else:
+		leftMotorspeed = U[0]
+		rightMotorspeed = U[1]
+		if (U[0] <= 0):
 			leftMotorspeed = 0
+		
 		if (U[0] >= 100):
 			leftMotorspeed = 100
 
-		if(U[1] >= 0):
-			rightMotorspeed = U[1]
-		else:
+		if(U[1] <= 0):
 			rightMotorspeed = 0
+	
 		if (U[1] >= 100):
 			rightMotorspeed = 100
 
 
-		return leftMotorspeed, rightMotorspeed
+		return int(leftMotorspeed), int(rightMotorspeed)
 
+# controller for altitude, only use when drone in small angle (< 30 deg, <15 deg for best results)
+
+class PID_controller_altitude():
+
+	def __init__(self, X, altitude_set,dt,kP,kI,kD):
+
+		self.altitude_set = altitude_set	# desired altitude
+		self.timestep = dt 					# simulation timestep
+		self.X = X							# body state of drone
+		self.altitude = self.X[1][0]		# just the altitude
+		self.integrated_altitude = 0 		# integrator term
+		self.vert_speed = 0 				# just the vertical speed
+		self.thrust_ret = 0 				# return variable for total thrust
+
+		# PID gains
+		self.kP = kP
+		self.kI = kI
+		self.kD = kD
+
+	def PID(self,X,altitude_set):
+
+
+
+		# book keeping
+		self.altitude_set = altitude_set
+		self.X = X
+		altitude_last = self.altitude
+
+		# 0 order alt
+		self.altitude = self.X[1][0]
+
+		# 1st order alt
+		self.vert_speed = self.X[1][1]
+
+		# -1st order alt /w/ clamping
+		if(abs(self.integrated_altitude + (self.timestep/2) * ((self.altitude_set - altitude_last) + (self.altitude_set - self.altitude))) < 10):
+			self.integrated_altitude = self.integrated_altitude + (self.timestep/2) * ((self.altitude_set - altitude_last) + (self.altitude_set - self.altitude))
+		print(self.integrated_altitude)
+
+
+		self.thrust_ret = (self.kP * (self.altitude_set - self.altitude)) + \
+					 (self.kD * self.vert_speed) + \
+					 (self.kI * self.integrated_altitude)
+
+		
+
+		if(self.thrust_ret > 100): self.thrust_ret = 100
+		if(self.thrust_ret  < 0): self.thrust_ret = 0
+		return int(self.thrust_ret)
+
+
+# controller for position

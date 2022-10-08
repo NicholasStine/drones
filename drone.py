@@ -2,7 +2,7 @@
 # WITH THE JAZZIEST PLEASURE, I
 # INTRODUCE, MY MAN, DUKE SILVER!!!
 from physics import Position, Vector, BodyState
-from controller import LQR_controller_attitude
+from controller import LQR_controller_attitude, PID_controller_altitude
 import pygame
 from numpy import array
 
@@ -12,8 +12,9 @@ DRONE_PATH = 'images/drone_medium.png'
 # initial positions
 
 X = [[500,0,0],[250,0,0]]
-theta = [-85,0,0]
+theta = [180,0,0]
 theta_set = [0,0,0]
+altitude_set = 150
 
 # simulation timestep, link this to your pygame step size
 
@@ -62,14 +63,17 @@ class Drone():
         self.body = BodyState(X, theta) # body state
         self.pos_x = self.body.X[0][0]  # reference position X
         self.pos_y = self.body.X[1][0]  # reference position Y
-        self.mass = 3                 # mass
+        self.mass = .5                 # mass
         self.inertia = 5             # moment of inertia
         self.accels = array([0,0,0])    # initial accelerations (thrust induced)
         self.leftPropPos = 15          # length from center of mass to left propeller
         self.rightPropPos = 15       # length from center of mass to right propeller
 
-        # attach controller
+        # attach attitude controller
         self.controller = LQR_controller_attitude(self.body.Theta,theta_set,(1/120)) 
+
+        # attach altitude autopilot
+        self.auto_alt = PID_controller_altitude(self.body.X,altitude_set,(1/120),-3,-5,4)
 
         # Dimensions
         self.strut = (100, 10)
@@ -92,12 +96,16 @@ class Drone():
         This 2D case is very easy as there is no navigation problem. 
 
         """
-        lms, rms = self.controller.feedback(self.body.Theta)
+        lms, rms = self.controller.feedback(self.body.Theta)            # get left/right offset
 
-        vert_thrust = 1
+        vert_thrust = self.auto_alt.PID(self.body.X,altitude_set)       # get combined thrust term
         lms += vert_thrust
         rms += vert_thrust
-        print(lms,rms)
+        if(lms < 0): lms = 0
+        if(lms > 200): lms = 200
+        if(rms < 0): rms = 0
+        if(rms > 200): rms = 200
+        print(lms,rms,int(self.pos_y),int(self.body.X[1][1]))
         self.Motormixing(lms,rms) 
 
 
