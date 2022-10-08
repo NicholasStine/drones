@@ -2,6 +2,7 @@
 # WITH THE JAZZIEST PLEASURE, I
 # INTRODUCE, MY MAN, DUKE SILVER!!!
 from physics import Position, Vector, BodyState
+from controller import LQR_controller_attitude
 import pygame
 from numpy import array
 
@@ -11,7 +12,8 @@ DRONE_PATH = 'images/drone_medium.png'
 # initial positions
 
 X = [[500,0,0],[250,0,0]]
-theta = [45,0,0]
+theta = [-85,0,0]
+theta_set = [0,0,0]
 
 # simulation timestep, link this to your pygame step size
 
@@ -61,10 +63,13 @@ class Drone():
         self.pos_x = self.body.X[0][0]  # reference position X
         self.pos_y = self.body.X[1][0]  # reference position Y
         self.mass = 3                 # mass
-        self.inertia = 15             # moment of inertia
+        self.inertia = 5             # moment of inertia
         self.accels = array([0,0,0])    # initial accelerations (thrust induced)
-        self.leftPropPos = 10          # length from center of mass to left propeller
-        self.rightPropPos = 10       # length from center of mass to right propeller
+        self.leftPropPos = 15          # length from center of mass to left propeller
+        self.rightPropPos = 15       # length from center of mass to right propeller
+
+        # attach controller
+        self.controller = LQR_controller_attitude(self.body.Theta,theta_set,(1/120)) 
 
         # Dimensions
         self.strut = (100, 10)
@@ -87,8 +92,13 @@ class Drone():
         This 2D case is very easy as there is no navigation problem. 
 
         """
+        lms, rms = self.controller.feedback(self.body.Theta)
 
-        self.Motormixing(12,10) 
+        vert_thrust = 1
+        lms += vert_thrust
+        rms += vert_thrust
+        print(lms,rms)
+        self.Motormixing(lms,rms) 
 
 
         self.body.timeStep(self.accels,(1/120),gravity)
