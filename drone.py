@@ -11,8 +11,8 @@ DRONE_PATH = 'images/drone_medium.png'
 # move this into your config or whatever
 # initial positions
 
-X = [[500,0,0],[250,0,0]]
-theta = [180,0,0]
+X = [[1200,0,0],[750,0,0]]
+theta = [30,0,0]
 theta_set = [0,0,0]
 altitude_set = 150
 
