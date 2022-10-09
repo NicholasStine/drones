@@ -80,8 +80,8 @@ class Drone():
 
     def Motormixing(self,leftThrust,rightThrust):
         # motor mixing algorithm
-        leftThrust = leftThrust * 1500
-        rightThrust = rightThrust * 1500
+        # leftThrust = leftThrust * 1500
+        # rightThrust = rightThrust * 1500
 
         self.accels[0] = 0# no thrust in the x direction, only in y
         self.accels[1] = -(leftThrust + rightThrust) / self.mass # F = ma
