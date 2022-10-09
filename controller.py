@@ -109,7 +109,7 @@ class PID_controller_altitude():
 		# -1st order alt /w/ clamping
 		if(abs(self.integrated_altitude + (self.timestep/2) * ((self.altitude_set - altitude_last) + (self.altitude_set - self.altitude))) < 10):
 			self.integrated_altitude = self.integrated_altitude + (self.timestep/2) * ((self.altitude_set - altitude_last) + (self.altitude_set - self.altitude))
-		print(self.integrated_altitude)
+		
 
 
 		self.thrust_ret = (self.kP * (self.altitude_set - self.altitude)) + \
@@ -124,5 +124,30 @@ class PID_controller_altitude():
 
 
 # controller for position
+
+class magicController_pos():
+
+	def __init__(self, body,X_set,kP,kD):
+
+		self.pos_x = body.X[0][0]
+		self.vel_x = body.X[0][1]
+		self.int_x = 0 
+		self.X_set = X_set
+		self.kP = kP
+		self.kD = kD
+
+	def AngleSet(self, body, X_set):
+
+		self.pos_x = body.X[0][0]
+		self.vel_x = body.X[0][1]
+		self.X_set = X_set
+
+		angle = - (self.kP * (self.X_set - self.pos_x) + self.kD * self.vel_x)
+
+		if (angle > 30): angle = 30
+		if (angle < -30): angle = -30
+
+		return angle
+
 
 
