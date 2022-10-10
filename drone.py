@@ -113,10 +113,12 @@ class Drone():
         vert_thrust = self.auto_alt.PID(self.body.X,set_y)       # get combined thrust term
         lms += vert_thrust
         rms += vert_thrust
-        if(lms < 0): lms = 0
-        if(lms > 200): lms = 200
-        if(rms < 0): rms = 0
-        if(rms > 200): rms = 200
+        lms = max(0, min(lms, 200))
+        rms = max(0, min(rms, 200))
+        # if(lms < 0): lms = 0
+        # if(lms > 200): lms = 200
+        # if(rms < 0): rms = 0
+        # if(rms > 200): rms = 200
         
         self.Motormixing(lms,rms) 
 
